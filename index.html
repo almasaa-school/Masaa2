@@ -43,7 +43,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .mod.on{display:flex}
 .sc{width:44px;height:40px;display:flex;align-items:center;justify-content:center;border:1.5px solid #cbd5e1;border-radius:8px;cursor:pointer;font-weight:800;font-size:10px;background:#f8fafc;color:#94a3b8}
 .sc.on{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff}
-.hero{position:relative;background:linear-gradient(135deg,#1e1b4b,#4c1d95 40%,#7c3aed 70%,#db2777);border-radius:22px;overflow:hidden;padding:36px 24px;text-align:center;color:#fff}
+.hero{background:linear-gradient(135deg,#1e1b4b,#4c1d95 40%,#7c3aed 70%,#db2777);border-radius:22px;overflow:hidden;padding:36px 24px;text-align:center;color:#fff}
 .tile{background:#fff;border-radius:18px;padding:20px 14px;text-align:center;cursor:pointer;transition:.3s;border:2px solid #f1f5f9;color:inherit;display:block;text-decoration:none}
 .tile:hover{transform:translateY(-6px);box-shadow:0 20px 35px -15px rgba(0,0,0,.15);border-color:var(--c,#4f46e5)}
 .tile-icon{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px;color:#fff}
@@ -73,6 +73,12 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .sgrid .cellh{background:#dcfce7;color:#166534;font-weight:900;border-radius:5px;padding:4px 2px}
 .sgrid .cellf{background:#f8fafc;color:#cbd5e1;border-radius:5px;padding:4px 2px}
 .sgrid .cells{background:#fef3c7;color:#92400e;font-weight:900;border-radius:5px;padding:4px 2px}
+.class-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;transition:.2s}
+.class-card.original{background:#dcfce7;border-color:#86efac}
+.class-card.substitute{background:#fef3c7;border-color:#fcd34d}
+.class-card.free{background:#f8fafc;opacity:.75}
+.class-card.absent{background:#fee2e2;border-color:#fca5a5}
+.class-name{font-size:18px;font-weight:900;color:#1e40af;min-width:60px}
 </style>
 </head>
 <body>
@@ -91,6 +97,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <nav style="flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px">
 <a onclick="go('home',event)" class="on"><i class="fas fa-house"></i>الرئيسية</a>
 <a onclick="go('now',event)"><i class="fas fa-satellite-dish"></i>من في الحصة الآن</a>
+<a onclick="go('search',event)"><i class="fas fa-magnifying-glass"></i>بحث بالحصة/الصف</a>
 <a onclick="go('tch',event)"><i class="fas fa-user-graduate"></i>المعلمون</a>
 <a onclick="go('abs',event)"><i class="fas fa-user-clock"></i>الغياب اليومي</a>
 <a onclick="go('dist',event)"><i class="fas fa-wand-magic-sparkles"></i>توزيع الاحتياط</a>
@@ -157,6 +164,10 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <div class="action-icon"><i class="fas fa-paste"></i></div>
 <div><h3>لصق مجموعة معلمين</h3><p>الصق قائمة الأسماء دفعة واحدة</p></div>
 </button>
+<button class="action-tile" onclick="go('search',event)" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">
+<div class="action-icon"><i class="fas fa-magnifying-glass"></i></div>
+<div><h3>بحث عن صف</h3><p>ابحث بالصف أو الشعبة</p></div>
+</button>
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:24px">
@@ -179,12 +190,12 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <a onclick="go('now',event)" class="tile" style="--c:#dc2626">
 <div class="tile-icon" style="background:linear-gradient(135deg,#f87171,#dc2626)"><i class="fas fa-satellite-dish"></i></div>
 <h3>الحصة الآن</h3><p>من يدرّس الآن</p></a>
+<a onclick="go('search',event)" class="tile" style="--c:#0ea5e9">
+<div class="tile-icon" style="background:linear-gradient(135deg,#38bdf8,#0284c7)"><i class="fas fa-magnifying-glass"></i></div>
+<h3>بحث صف</h3><p>ابحث بالصف</p></a>
 <a onclick="go('tch',event)" class="tile" style="--c:#10b981">
 <div class="tile-icon" style="background:linear-gradient(135deg,#34d399,#059669)"><i class="fas fa-user-graduate"></i></div>
 <h3>المعلمون</h3><p>البيانات والجداول</p></a>
-<a onclick="go('sch',event)" class="tile" style="--c:#f59e0b">
-<div class="tile-icon" style="background:linear-gradient(135deg,#fbbf24,#d97706)"><i class="fas fa-table-list"></i></div>
-<h3>الجدول اليومي</h3><p>احتياط اليوم</p></a>
 <a onclick="go('scls',event)" class="tile" style="--c:#8b5cf6">
 <div class="tile-icon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)"><i class="fas fa-school"></i></div>
 <h3>الجدول المدرسي</h3><p>عرض شبكي</p></a>
@@ -213,7 +224,23 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <div style="font-weight:900;font-size:13px"><i class="fas fa-clock" style="color:#4f46e5"></i> اختر حصة:</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap" id="periodButtons"></div>
 </div>
-<div id="nowGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px"></div>
+<div id="nowGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:9px"></div>
+</div>
+
+<div id="search" class="tab">
+<h2 style="font-size:20px;font-weight:900;margin-bottom:16px"><i class="fas fa-magnifying-glass" style="color:#0ea5e9"></i> البحث بالحصة أو الصف</h2>
+
+<div class="card" style="padding:16px;margin-bottom:16px">
+<div style="font-weight:900;font-size:13px;margin-bottom:10px"><i class="fas fa-filter" style="color:#4f46e5"></i> اختر حصة واليوم:</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px" id="searchPeriods"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="searchDays"></div>
+<div style="position:relative">
+<i class="fas fa-search" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+<input id="classSearch" oninput="renderClassSearch()" placeholder="ابحث عن صف (مثل 5/9 أو 6/7)..." style="padding-right:42px">
+</div>
+</div>
+
+<div id="classResults"></div>
 </div>
 
 <div id="tch" class="tab">
@@ -474,13 +501,13 @@ const DAYJS={0:'الأحد',1:'الاثنين',2:'الثلاثاء',3:'الأر�
 const PT={1:['08:00','08:45'],2:['09:00','09:45'],3:['10:00','10:45'],4:['11:00','11:45'],5:['12:00','12:45'],6:['13:00','13:45'],7:['14:00','14:45'],8:['15:00','15:45']};
 
 let S={teachers:[],reserves:[],settings:{fq:25,sf:0.25,dl:2,dls:1,noBetween:true,noAfter3:true},school:{name:'مدرسة المسعى',logoR:null,logoL:null},periods:[],activePeriod:null,quotasByPeriod:{},absenceLog:[]};
-let editId=null,tmpS=null,charts={},liveTimer=null,selP=null;
+let editId=null,tmpS=null,charts={},liveTimer=null,selP=null,selDay=null;
 
 const INIT=['يحيى عبدالله سليمان السابعي|التربية الإسلامية|معلم','علي الغساني|التربية الإسلامية|معلم','بدر بطي راشد القاسمي|التربية الإسلامية|معلم','علي الشيادي|التربية الإسلامية|معلم','احمد محمد عبيد السعدي|التربية الإسلامية|معلم','سلطان ناصر سيف الربيعي|التربية الإسلامية|معلم','سمير خميس غابش الخميسى|التربية الإسلامية|معلم','ناصر الغذائي|اللغة العربية|معلم','نبيل المقيالي|اللغة العربية|معلم','عامر سليمان حميد السعيدى|اللغة العربية|معلم','شهاب العلوي|اللغة العربية|معلم','محمد عامر فاضل السعدى|اللغة العربية|معلم','ابراهيم القرني|اللغة العربية|معلم','سلطان الصالحي|اللغة العربية|معلم','ماجد سعيد على الشحى|اللغة العربية|معلم','سعيد محمد على الغذائي|اللغة الإنجليزية|معلم','حمد صالح حمدان البلوشى|اللغة الإنجليزية|معلم','احمد حميد سيف هاشل المخمرى|اللغة الإنجليزية|معلم','سيف الدين بن يونس الحاجي|اللغة الإنجليزية|معلم','محمد سالم على البلوشي|الرياضيات|معلم','سعيد مبارك عبدالله البلوشي|الرياضيات|معلم','سلطان حميد راشد الغافرى|الرياضيات|معلم','شريف الصالحي|الرياضيات|معلم','عمرو عبدالعالم محمد محمود|الرياضيات|معلم','مروان العادل|الرياضيات|معلم','عبدالعزيز الغداني|العلوم|معلم','عبدالله الخميسي|العلوم|معلم','عمار راشد صغير سعيد الصالحي|العلوم|معلم','فريد المقبالي|العلوم|معلم','بدر سيف خميس الغافري|الدراسات الاجتماعية|معلم','ماجد سعيد هلال الحوسنى|الدراسات الاجتماعية|معلم','محمد شاكر|الفنون التشكيلية|معلم','هشام صالح منجود صالح|المهارات الموسيقية|معلم','ياسر صغير مبارك الرشيدى|الرياضة المدرسية|معلم','جاسم البلوشي|الرياضة المدرسية|معلم','عبدالعزيز محمد صالح البلوشى|الفنون التشكيلية|معلم أول','ناصر سعيد صالح المسعودي|تقنية المعلومات|معلم أول','عادل ناعم راشد الشيدي|المهارات الحياتية|معلم أول','مخلد سالم هاشل سيف العوادي|العلوم|معلم','سعد السعدي|العلوم|معلم','فوزي عبدالله سعيد الصالحي|الدراسات الاجتماعية|معلم','حمد محمد خميس البادي|تقنية المعلومات|معلم'];
 
 function emptySch(){const o={};DAYS.forEach(d=>o[d]={});return o}
 function load(){
-  const s=localStorage.getItem('masaa10');
+  const s=localStorage.getItem('masaa11');
   if(s){try{S=Object.assign(S,JSON.parse(s))}catch(e){}}
   if(!S.teachers||!S.teachers.length){
     S.teachers=INIT.map((str,i)=>{const p=str.split('|');return{id:i+1,name:p[0],subject:p[1],type:p[2]||'معلم',phone:'',schedule:emptySch(),balance:0,isAbsent:false,exempt:false,lastP:0}});
@@ -493,12 +520,14 @@ function load(){
   ['dt','dt2'].forEach(id=>{const e=document.getElementById(id);if(e&&!e.value)e.value=today});
   ['fq:25','sf:0.25','dl:2','dls:1'].forEach(str=>{const[k,v]=str.split(':');document.getElementById('c'+k).value=S.settings[k]||v});
   ['noBetween','noAfter3'].forEach(k=>{document.getElementById(k).checked=S.settings[k]!==false});
-  applySchoolInfo();renderAll();renderMobNav();
+  selDay=DAYS[(new Date().getDay())-1]||DAYS[0];
+  if(!DAYS.includes(selDay))selDay=DAYS[0];
+  applySchoolInfo();renderAll();renderMobNav();renderSearchControls();
   updateLive();
   if(liveTimer)clearInterval(liveTimer);
   liveTimer=setInterval(updateLive,30000)
 }
-function save(){localStorage.setItem('masaa10',JSON.stringify(S));renderAll()}
+function save(){localStorage.setItem('masaa11',JSON.stringify(S));renderAll()}
 function quota(t){if(!t.schedule)return 0;let n=0;Object.values(t.schedule).forEach(d=>n+=Object.keys(d||{}).length);return n}
 function limit(t){
   if(S.activePeriod&&S.quotasByPeriod[S.activePeriod]&&S.quotasByPeriod[S.activePeriod][t.id]!=null)return S.quotasByPeriod[S.activePeriod][t.id];
@@ -519,7 +548,7 @@ function getCurrentPeriod(){
   return null
 }
 
-function renderAll(){stats();renderTch();resTable();absGrid();renderSch();renderSchoolSched();renderRep();renderPeriodsUI();renderQuotaUI();applySchoolInfo();renderPeriodButtons();renderNowGrid();renderCounters()}
+function renderAll(){stats();renderTch();resTable();absGrid();renderSch();renderSchoolSched();renderRep();renderPeriodsUI();renderQuotaUI();applySchoolInfo();renderPeriodButtons();renderNowGrid();renderCounters();renderClassSearch()}
 function stats(){document.getElementById('hs1').innerText=S.teachers.length;document.getElementById('hs2').innerText=S.teachers.filter(t=>t.isAbsent).length;const today=new Date().toISOString().split('T')[0];document.getElementById('hs3').innerText=S.reserves.filter(r=>r.date===today&&r.sub).length}
 function renderCounters(){
   const el=document.getElementById('counterGrid');if(!el)return;
@@ -597,6 +626,87 @@ function renderNowGrid(){
       </div>`;
     grid.appendChild(av)
   })
+}
+
+/* ===== SEARCH BY CLASS ===== */
+function renderSearchControls(){
+  const elP=document.getElementById('searchPeriods');
+  const elD=document.getElementById('searchDays');
+  if(!elP||!elD)return;
+  elP.innerHTML='';
+  PER.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.className='btn '+(p===selP?'b1':'b5');
+    btn.style.cssText='padding:6px 11px;font-size:11.5px;min-width:44px';
+    btn.innerHTML=`ح${p}`;
+    btn.onclick=()=>{selP=p;renderSearchControls();renderClassSearch()};
+    elP.appendChild(btn)
+  });
+  elD.innerHTML='';
+  DAYS.forEach(d=>{
+    const btn=document.createElement('button');
+    btn.className='btn '+(d===selDay?'b1':'b5');
+    btn.style.cssText='padding:6px 11px;font-size:11.5px';
+    btn.innerHTML=d;
+    btn.onclick=()=>{selDay=d;renderSearchControls();renderClassSearch()};
+    elD.appendChild(btn)
+  })
+}
+
+function renderClassSearch(){
+  const box=document.getElementById('classResults');if(!box)return;
+  if(!selP||!selDay){box.innerHTML='<div class="card" style="padding:30px;text-align:center;color:#94a3b8">اختر حصة ويوم</div>';return}
+  const filter=(document.getElementById('classSearch').value||'').trim().toLowerCase();
+  // Build map: className -> {teacher, subject, status, absent}
+  const classes={};
+  S.teachers.forEach(t=>{
+    const sch=(t.schedule&&t.schedule[selDay])||{};
+    if(sch[selP]){
+      const cls=sch[selP];
+      if(!classes[cls])classes[cls]=[];
+      classes[cls].push({teacher:t,type:'original',absent:t.isAbsent});
+    }
+  });
+  // Reserves for selected day/period
+  const dateToday=new Date().toISOString().split('T')[0];
+  S.reserves.forEach(r=>{
+    if(r.day===selDay&&r.period===selP&&r.className&&r.sub){
+      const sub=S.teachers.find(t=>t.id===r.sub);
+      const absT=S.teachers.find(t=>t.id===r.absId);
+      if(sub){
+        if(!classes[r.className])classes[r.className]=[];
+        const exist=classes[r.className].some(x=>x.teacher.id===sub.id);
+        if(!exist)classes[r.className].push({teacher:sub,type:'sub',absent:false,replaces:absT});
+      }
+    }
+  });
+
+  const classList=Object.entries(classes).filter(([cls])=>!filter||cls.toLowerCase().includes(filter));
+  if(!classList.length){box.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:#94a3b8"><i class="fas fa-inbox" style="font-size:40px;opacity:.3;display:block;margin-bottom:10px"></i>لا توجد صفوف</div>`;return}
+
+  let html=`<div style="font-weight:900;font-size:13px;margin-bottom:10px;color:#334155"><i class="fas fa-list" style="color:#4f46e5"></i> عدد الصفوف: ${classList.length}</div>`;
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">';
+  classList.sort().forEach(([cls,arr])=>{
+    arr.forEach(entry=>{
+      const t=entry.teacher;
+      let cardCls='class-card';
+      let status='';
+      if(entry.absent){cardCls+=' absent';status='<span class="badge bred">غائب</span>'}
+      else if(entry.type==='sub'){cardCls+=' substitute';status=`<span class="badge bs">احتياط بدلاً من ${entry.replaces?entry.replaces.name.split(' ')[0]:'-'}</span>`}
+      else{cardCls+=' original';status='<span class="badge bgreen">أصلي</span>'}
+      html+=`<div class="${cardCls}">
+        <div class="class-name">${cls}</div>
+        <div style="flex:1;min-width:0">
+          <p style="font-weight:900;margin:0;font-size:13.5px">${t.name}</p>
+          <p style="margin:3px 0 0;color:#64748b;font-size:11px">${t.subject}</p>
+          <div style="margin-top:4px">${status}</div>
+        </div>
+        ${t.phone?`<a href="https://wa.me/${t.phone.replace(/[^0-9]/g,'')}" target="_blank" style="background:#16a34a;color:#fff;border:none;padding:8px;border-radius:8px;text-decoration:none"><i class="fab fa-whatsapp"></i></a>`:''}
+      </div>`
+    })
+  });
+  html+='</div>';
+  box.innerHTML=html
 }
 
 function renderTch(){
@@ -1002,12 +1112,14 @@ function go(id,e){
   if(id==='scls')renderSchoolSched();
   if(id==='tch')renderTch();
   if(id==='now'){updateLive();renderPeriodButtons();renderNowGrid()}
+  if(id==='search'){renderSearchControls();renderClassSearch()}
 }
 function toggleMob(){const m=document.getElementById('mobSb');m.style.display=m.style.display==='none'?'block':'none'}
 function renderMobNav(){
   document.getElementById('mobNav').innerHTML=`
     <a onclick="go('home',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">الرئيسية</a>
     <a onclick="go('now',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">من في الحصة الآن</a>
+    <a onclick="go('search',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">بحث بالصف</a>
     <a onclick="go('tch',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">المعلمون</a>
     <a onclick="go('abs',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">الغياب</a>
     <a onclick="go('dist',event);toggleMob()" style="color:#c7d2fe;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12.5px">التوزيع</a>
@@ -1089,7 +1201,7 @@ function renderQuotaTable(){
 <td><span class="badge bpurple">${t.subject}</span></td>
 <td><span class="badge bb">${quota(t)}</span></td>
 <td><span class="badge bt">${auto}</span></td>
-<td><input type="number" value="${custom!=null?custom:auto}" onchange="setQuota('${pid}',${t.id},this.value)" style="width:75px;padding:5px;font-weight:900" min="0"></td>
+');<td><input type="number" value="${customlocation!=null?custom:auto}" onchange="setQuota('${pid}',${t.id},this.value)" style="width:75px;padding:5px;font-weight:900" min="0"></td>
 <td style="font-weight:900;color:#4f46e5">${t.balance}</td>
 <td><button onclick="delQuota('${pid}',${t.id})" style="background:#dc2626;color:#fff;border:none;padding:5px 9px;border-radius:7px;cursor:pointer">↺</button></td>`;
     tb.appendChild(tr)
@@ -1120,33 +1232,12 @@ function renderRep(){
 
 function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='masaa-'+new Date().toISOString().split('T')[0]+'.json';a.click()}
 function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{try{S=JSON.parse(ev.target.result);save();alert('تم')}catch(err){alert('خطأ')}};r.readAsText(f)}
-function clearAll(){if(!confirm('مسح؟'))return;localStorage.removeItem('masaa10');location.reload()}
+function clearAll(){if(!confirm('مسح؟'))return;localStorage.removeItem('masaa11.reload()}
 function msg(m,t){const b=document.getElementById('msg');b.innerHTML=`<div class="al al${t}">${m}</div>`;setTimeout(()=>b.innerHTML='',5000)}
 
 function handleResize(){if(window.innerWidth>=768){document.getElementById('deskSb').style.display='flex';document.getElementById('mobHdr').style.display='none'}else{document.getElementById('deskSb').style.display='none';document.getElementById('mobHdr').style.display='flex'}}
 window.addEventListener('resize',handleResize);handleResize();
 window.onload=load;
-</script>
-
-<!-- زر النسخ في الأسفل -->
-<div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;">
-<button onclick="copyPageCode()" id="copyBtn" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:14px 32px;border-radius:50px;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 8px 25px rgba(16,185,129,.5);font-family:inherit;display:flex;align-items:center;gap:10px;">
-<i class="fas fa-copy" style="font-size:20px;"></i>
-نسخ الكود الكامل
-</button>
-</div>
-<script>
-function copyPageCode(){
-  const html='<!DOCTYPE html>'+document.documentElement.innerHTML.split('<!DOCTYPE html>')[1];
-  // Since we can't easily extract the raw HTML from a running page, we show instructions instead
-  const btn=document.getElementById('copyBtn');
-  btn.innerHTML='<i class="fas fa-info-circle" style="font-size:20px;"></i> استخدم Ctrl+A ثم انسخ';
-  btn.style.background='linear-gradient(135deg,#f59e0b,#d97706)';
-  setTimeout(()=>{
-    btn.innerHTML='<i class="fas fa-copy" style="font-size:20px;"></i> نسخ الكود الكامل';
-    btn.style.background='linear-gradient(135deg,#10b981,#059669)';
-  },3000);
-}
 </script>
 </body>
 </html>
