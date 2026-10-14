@@ -99,7 +99,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 .sv{font-size:24px;font-weight:900;margin:0}
 .cnt{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-radius:13px;padding:9px 12px;text-align:center;min-width:68px;box-shadow:0 6px 18px -6px var(--pri)}
 .cnt.ov{background:linear-gradient(135deg,var(--dan),#c92a20)}
-.cnt.last{background:linear-gradient(135deg,var(--acc),#c67400)}
 .cn{font-size:24px;font-weight:900;line-height:1;margin:0}
 .cl{font-size:10px;font-weight:700;margin:2px 0 0;opacity:.95}
 .av{width:48px;height:48px;border-radius:13px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
@@ -138,23 +137,26 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 .hb p{margin:3px 0 0;font-size:12.5px;opacity:.85}
 .cpb{background:var(--surf3);border:1.5px dashed var(--bds);border-radius:12px;padding:13px;font-family:monospace;font-size:11.5px;max-height:300px;overflow-y:auto;white-space:pre;direction:rtl;line-height:1.6;color:var(--txt)}
 .thm-sel{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
-.thm{pad:14px 10px;border-radius:13px;border:2px solid var(--bd);background:var(--surf);text-align:center;cursor:pointer;transition:.2s;padding:14px 10px}
+.thm{border-radius:13px;border:2px solid var(--bd);background:var(--surf);text-align:center;cursor:pointer;transition:.2s;padding:14px 10px}
 .thm:hover{border-color:var(--pri);transform:translateY(-3px)}
 .thm.act{border-color:var(--pri);background:var(--prisoft)}
 .thm .pv{width:100%;height:44px;border-radius:9px;margin-bottom:8px}
 .thm h4{font-size:12px;font-weight:800;margin:0 0 2px;color:var(--txt)}
 .thm p{font-size:10px;color:var(--txt3);margin:0}
-.tsc{background:var(--surf);border:1px solid var(--bd);border-radius:15px;padding:15px;transition:.25s}
-.tsc:hover{box-shadow:var(--shlg);transform:translateY(-2px)}
-.tpg{height:7px;background:var(--surf3);border-radius:100px;overflow:hidden;margin-top:7px}
-.tpgb{height:100%;background:linear-gradient(90deg,var(--pri),var(--pri2));border-radius:100px;transition:width .5s}
-.tpgb.wn{background:linear-gradient(90deg,var(--warn),#c67400)}
-.tpgb.dn{background:linear-gradient(90deg,var(--dan),#c92a20)}
+.back-fab{position:fixed;bottom:20px;left:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none;cursor:pointer;z-index:500;display:none;align-items:center;justify-content:center;font-size:20px;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:.2s}
+.back-fab.show{display:flex}
+.back-fab:active{transform:scale(.92)}
+.now-search{background:var(--surf);border:1.5px solid var(--bd);border-radius:14px;padding:13px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.now-search input{border:none;background:transparent;flex:1;font-size:14px;padding:0}
+.day-mini{margin-top:8px;font-size:11px;color:var(--txt2);line-height:1.7;background:var(--surf3);padding:8px 10px;border-radius:9px;font-weight:600}
 @media(min-width:768px){.sb{display:flex}.mh{display:none}}
-@media(max-width:767px){.ct{padding:14px}.hero{padding:30px 18px}.hero h1{font-size:26px}}
+@media(max-width:767px){.ct{padding:14px}.hero{padding:30px 18px}.hero h1{font-size:26px}.back-fab{bottom:80px}}
+@media print{.no-print,.sb,.mh,.main-header,.back-fab,button,input,select,.now-search,.hb .icn{display:none!important}body{background:#fff!important}.card{box-shadow:none!important;border:1px solid #ddd!important}.tab{display:block!important}.hero{display:none!important}table{page-break-inside:avoid}.ct{padding:0!important}}
 </style>
 </head>
 <body data-th="light">
+
+<button class="back-fab no-print" id="backFab" onclick="goBack()"><i class="fas fa-arrow-right"></i></button>
 
 <div class="app">
 <aside class="sb" id="sbMain">
@@ -187,7 +189,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div class="ct">
 <div id="errBox"></div>
 
-<!-- HOME -->
 <div id="tab-home" class="tab act">
 <div class="hero" style="margin-bottom:22px">
 <div style="position:relative;z-index:2">
@@ -239,7 +240,7 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 </div>
 <div class="sc2">
 <div class="si" style="background:rgba(255,149,0,.15);color:var(--acc)"><i class="fas fa-star"></i></div>
-<div><p class="sl">حصص أخيرة (احتياط)</p><p class="sv" style="color:var(--acc)" id="stL">0</p></div>
+<div><p class="sl">الحصة الأخيرة (احتياط)</p><p class="sv" style="color:var(--acc)" id="stL">0</p></div>
 </div>
 </div>
 
@@ -247,21 +248,23 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div class="gs" id="homeTiles"></div>
 </div>
 
-<!-- NOW -->
 <div id="tab-now" class="tab">
-<div class="hb"><div class="icn" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><i class="fas fa-satellite-dish"></i></div>
-<div style="flex:1"><h2>من في الحصة الآن</h2><p id="nowSt">جاري التحديث...</p></div></div>
+<div class="hb"><div class="icn" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><i class="fas fa-users"></i></div>
+<div style="flex:1"><h2>المعلمون الآن</h2><p id="nowSt">جاري التحديث...</p></div></div>
 <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;border:none">
 <div id="nowInf" style="font-size:14px;font-weight:700">جاري التحميل...</div>
+</div>
+<div class="now-search no-print">
+<i class="fas fa-magnifying-glass" style="color:var(--pri)"></i>
+<input id="nowSearch" placeholder="🔍 ابحث عن معلم أو تخصص..." oninput="rdNowG()">
 </div>
 <div class="card" style="padding:14px;margin-bottom:14px">
 <div style="font-weight:900;font-size:13.5px;margin-bottom:10px"><i class="fas fa-clock" style="color:var(--pri)"></i> اختر حصة:</div>
 <div style="display:flex;gap:7px;flex-wrap:wrap" id="nowP"></div>
 </div>
-<div id="nowG" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px"></div>
+<div id="nowG" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
 </div>
 
-<!-- SEARCH -->
 <div id="tab-search" class="tab">
 <div class="hb"><div class="icn" style="background:linear-gradient(135deg,#38bdf8,#0284c7)"><i class="fas fa-magnifying-glass"></i></div>
 <div style="flex:1"><h2>بحث بالحصة والصف</h2><p>اعرف من يدرّس أي صف</p></div></div>
@@ -279,43 +282,40 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div id="srchR"></div>
 </div>
 
-<!-- TEACHERS -->
 <div id="tab-teach" class="tab">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
 <h2 style="font-size:20px;font-weight:900;margin:0"><i class="fas fa-user-graduate" style="color:var(--suc)"></i> المعلمون</h2>
 <div style="display:flex;gap:7px;flex-wrap:wrap">
-<button class="by bs" onclick="exportTeach()"><i class="fas fa-file-export"></i>تصدير</button>
-<button class="bs" style="background:#a78bfa;color:#fff" onclick="openBulk()"><i class="fas fa-paste"></i>لصق</button>
-<button class="bg bs" onclick="addT()"><i class="fas fa-user-plus"></i>إضافة</button>
+<button class="by bs no-print" onclick="exportTeach()"><i class="fas fa-file-export"></i>تصدير</button>
+<button class="bs no-print" style="background:#a78bfa;color:#fff" onclick="openBulk()"><i class="fas fa-paste"></i>لصق</button>
+<button class="bg bs no-print" onclick="addT()"><i class="fas fa-user-plus"></i>إضافة</button>
 </div>
 </div>
-<div class="card" style="padding:10px;margin-bottom:12px">
+<div class="card no-print" style="padding:10px;margin-bottom:12px">
 <input id="tSearch" oninput="rdTeach()" placeholder="🔍 ابحث...">
 </div>
 <div id="tList" style="display:flex;flex-direction:column;gap:10px"></div>
 </div>
 
-<!-- ABSENCES -->
 <div id="tab-abs" class="tab">
 <div class="hb" style="background:linear-gradient(90deg,#991b1b,#dc2626)">
 <div class="icn"><i class="fas fa-user-clock"></i></div>
 <div style="flex:1"><h2>تسجيل الغياب</h2><p>اضغط البطاقة</p></div>
 <div style="display:flex;gap:6px;flex-wrap:wrap">
-<button class="bs" style="background:rgba(255,255,255,.2);color:#fff" onclick="shareAbs()"><i class="fab fa-whatsapp"></i></button>
-<button class="bs" style="background:rgba(255,255,255,.2);color:#fff" onclick="clrAbs()"><i class="fas fa-rotate-left"></i></button>
+<button class="bs no-print" style="background:rgba(255,255,255,.2);color:#fff" onclick="shareAbs()"><i class="fab fa-whatsapp"></i></button>
+<button class="bs no-print" style="background:rgba(255,255,255,.2);color:#fff" onclick="clrAbs()"><i class="fas fa-rotate-left"></i></button>
 </div></div>
-<div class="card" style="padding:10px;margin-bottom:12px">
+<div class="card no-print" style="padding:10px;margin-bottom:12px">
 <input id="absSearch" oninput="rdAbs()" placeholder="🔍 ابحث...">
 </div>
 <div id="absG" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px"></div>
 </div>
 
-<!-- DISTRIBUTE -->
 <div id="tab-dist" class="tab">
 <div class="hb" style="background:linear-gradient(90deg,#4c1d95,#7c3aed)">
 <div class="icn"><i class="fas fa-wand-magic-sparkles"></i></div>
 <div style="flex:1"><h2>توزيع الاحتياط</h2><p>توزيع تلقائي ذكي</p></div></div>
-<div class="card" style="padding:16px;margin-bottom:16px">
+<div class="card no-print" style="padding:16px;margin-bottom:16px">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
 <div style="display:flex;align-items:center;gap:9px;background:var(--surf3);padding:11px 16px;border-radius:13px">
 <i class="fas fa-calendar-day" style="color:var(--pri);font-size:17px"></i>
@@ -325,19 +325,18 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div style="display:flex;gap:7px;flex-wrap:wrap">
 <button class="bp bs" onclick="autoDist()"><i class="fas fa-wand-magic-sparkles"></i>توزيع</button>
 <button class="bs" style="background:#a78bfa;color:#fff" onclick="openMan()"><i class="fas fa-circle-plus"></i>يدوي</button>
-<button class="bg bs" onclick="shareSch()"><i class="fab fa-whatsapp"></i></button>
-<button class="br bs" onclick="window.print()"><i class="fas fa-print"></i></button>
+<button class="bs" style="background:var(--dan);color:#fff" onclick="genPDF()"><i class="fas fa-file-pdf"></i>PDF</button>
+<button class="bs" style="background:#25d366;color:#fff" onclick="shareSch()"><i class="fab fa-whatsapp"></i>مشاركة</button>
 </div>
 </div>
 <div id="distMsg"></div>
 </div>
 <div class="card" style="overflow:hidden"><div style="overflow-x:auto">
-<table><thead><tr><th>الغائب</th><th>التخصص</th><th>الحصة</th><th>الصف</th><th>البديل</th><th>التخصص</th><th>إجراء</th></tr></thead>
+<table><thead><tr><th>الغائب</th><th>التخصص</th><th>الحصة</th><th>الصف</th><th>البديل</th><th>التخصص</th><th class="no-print">إجراء</th></tr></thead>
 <tbody id="resTbl"></tbody></table>
 </div></div>
 </div>
 
-<!-- DAILY -->
 <div id="tab-daily" class="tab">
 <h2 style="font-size:20px;font-weight:900;margin:0 0 16px"><i class="fas fa-table-list" style="color:var(--warn)"></i> الجدول اليومي</h2>
 <div class="card" style="padding:16px">
@@ -347,23 +346,22 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <input type="date" id="dailyD" style="border:none;background:none;font-weight:700;width:auto;padding:0" onchange="rdDaily()">
 </div>
 <div style="display:flex;gap:7px;flex-wrap:wrap">
-<button class="bg bs" onclick="shareSch()"><i class="fab fa-whatsapp"></i></button>
-<button class="br bs" onclick="window.print()"><i class="fas fa-print"></i></button>
+<button class="bs no-print" style="background:#25d366;color:#fff" onclick="shareSch()"><i class="fab fa-whatsapp"></i></button>
+<button class="bs no-print" style="background:var(--dan);color:#fff" onclick="genPDF()"><i class="fas fa-file-pdf"></i>PDF</button>
 </div>
 </div>
 <div id="dailyB"></div>
 </div>
 </div>
 
-<!-- SCHOOL SCHEDULE -->
 <div id="tab-school" class="tab">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
 <h2 style="font-size:20px;font-weight:900;margin:0"><i class="fas fa-school" style="color:#8b5cf6"></i> الجدول المدرسي</h2>
-<div style="background:rgba(255,159,10,.15);padding:9px 14px;border-radius:11px;font-size:12px;font-weight:700;color:var(--warn)">
+<div class="bs no-print" style="background:rgba(255,159,10,.15);color:var(--warn);cursor:default">
 <i class="fas fa-hand-pointer"></i> اضغط أي خلية للتعديل
 </div>
 </div>
-<div class="card" style="padding:14px;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<div class="card no-print" style="padding:14px;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
 <label style="font-weight:700;font-size:13px">عرض:</label>
 <select id="schV" onchange="rdSchool()" style="max-width:200px">
 <option value="all">جميع المعلمين</option>
@@ -374,7 +372,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div id="schoolB"></div>
 </div>
 
-<!-- REPORTS -->
 <div id="tab-rep" class="tab">
 <h2 style="font-size:20px;font-weight:900;margin:0 0 16px"><i class="fas fa-chart-pie" style="color:#db2777"></i> التقارير</h2>
 <div class="gs" style="margin-bottom:18px">
@@ -389,7 +386,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 </div>
 </div>
 
-<!-- QUOTAS (Stats) -->
 <div id="tab-quotas" class="tab">
 <h2 style="font-size:20px;font-weight:900;margin:0 0 16px"><i class="fas fa-scale-balanced" style="color:#7c3aed"></i> إحصائيات مفصلة</h2>
 <div class="card" style="padding:18px;margin-bottom:16px">
@@ -399,23 +395,20 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div class="card" style="padding:18px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-chart-line" style="color:var(--suc)"></i> تفاصيل كل معلم</h3>
 <div style="overflow-x:auto"><table>
-<thead><tr><th>الاسم</th><th>التخصص</th><th>الأساسية</th><th>الاحتياط</th><th>الأخيرة</th><th>النسبة</th><th>سقف مخصص</th></tr></thead>
+<thead><tr><th>الاسم</th><th>التخصص</th><th>الأساسية</th><th>الاحتياط</th><th>الحصة الأخيرة</th><th>النسبة</th><th class="no-print">سقف مخصص</th></tr></thead>
 <tbody id="qTbl"></tbody>
 </table></div>
 </div>
 </div>
 
-<!-- DASHBOARD (لوحة التحكم) -->
 <div id="tab-dash" class="tab">
 <h2 style="font-size:20px;font-weight:900;margin:0 0 16px"><i class="fas fa-sliders" style="color:var(--pri)"></i> لوحة التحكم</h2>
 
-<!-- Theme -->
 <div class="card" style="padding:18px;margin-bottom:16px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-palette" style="color:var(--pri)"></i> الثيمات</h3>
 <div class="thm-sel" id="thmSel"></div>
 </div>
 
-<!-- Labels -->
 <div class="card" style="padding:18px;margin-bottom:16px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-heading" style="color:var(--pri)"></i> العناوين</h3>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -425,7 +418,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <button class="bp bs" onclick="saveLbl()" style="margin-top:12px;width:100%"><i class="fas fa-floppy-disk"></i>حفظ</button>
 </div>
 
-<!-- Logos -->
 <div class="card" style="padding:18px;margin-bottom:16px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-image" style="color:var(--pri)"></i> الشعارات</h3>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -438,14 +430,12 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 </div>
 </div>
 
-<!-- Periods Timing -->
 <div class="card" style="padding:18px;margin-bottom:16px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-clock" style="color:var(--pri)"></i> توقيت الحصص</h3>
 <div id="periodEditor" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px"></div>
 <button class="bp bs" onclick="saveTimes()" style="margin-top:12px;width:100%"><i class="fas fa-floppy-disk"></i>حفظ التوقيت</button>
 </div>
 
-<!-- Rules -->
 <div class="card" style="padding:18px;margin-bottom:16px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-shield-halved" style="color:var(--pri)"></i> قواعد التوزيع</h3>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -464,7 +454,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 <div id="dashMsg"></div>
 </div>
 
-<!-- Backup -->
 <div class="card" style="padding:18px">
 <h3 style="font-size:14px;font-weight:900;margin:0 0 12px"><i class="fas fa-database" style="color:var(--pri)"></i> البيانات</h3>
 <button class="by bs" onclick="expBak()" style="width:100%;margin-bottom:7px"><i class="fas fa-download"></i>تصدير نسخة</button>
@@ -477,7 +466,6 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 </main>
 </div>
 
-<!-- MODALS -->
 <div id="mT" class="mod"><div class="mc">
 <div class="mh2"><h3 id="mTT">إضافة معلم</h3><button onclick="cM('mT')">×</button></div>
 <form onsubmit="saveT(event)">
@@ -548,7 +536,14 @@ td{padding:11px;border-bottom:1px solid var(--bd);font-size:13px}
 
 <script>
 'use strict';
-window.addEventListener('error',e=>{const b=document.getElementById('errBox');if(b)b.innerHTML='<div class="al ale"><i class="fas fa-triangle-exclamation"></i> خطأ: '+e.message+'</div>'});
+window.addEventListener('error',function(e){
+  if(e.message&&e.message.indexOf('Script error')===-1){
+    var b=document.getElementById('errBox');
+    if(b)b.innerHTML='<div class="al ale"><i class="fas fa-triangle-exclamation"></i> خطأ: '+e.message+'</div>';
+  }
+  e.preventDefault();
+  return true;
+});
 
 const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
 const PER=[1,2,3,4,5,6,7,8];
@@ -633,6 +628,7 @@ const PSD={
 let state={teachers:[],reserves:[],settings:{fullQuota:25,seniorFactor:0.25,dailyLimit:2,dailyLimitSenior:1,noBetween:true,noAfter3:true,balanceLast:true},theme:'light',times:null,school:{name:'مدرسة المسعى',logoR:null,logoL:null},labels:{platform:'منصة المسعى'},absenceLog:[]};
 
 let editId=null,tmpS=null,charts={},selP=1,selD='الأحد',liveTimer=null;
+let tabHistory=['home'];
 
 function emptySch(){const o={};DAYS.forEach(d=>o[d]={});return o}
 function $(id){return document.getElementById(id)}
@@ -645,7 +641,20 @@ function getSubLastCount(t){return state.reserves.filter(r=>r.substituteId===t.i
 function dayName(ds){if(!ds)return null;const d=new Date(ds+'T12:00:00');return DAYJS[d.getDay()]}
 function getNowPeriod(){const n=new Date();const d=n.getDay();if(d===5||d===6)return null;const t=n.getHours()*60+n.getMinutes();for(let p=1;p<=8;p++){const[sh,sm]=PT[p][0].split(':').map(Number);const[eh,em]=PT[p][1].split(':').map(Number);if(t>=sh*60+sm&&t<=eh*60+em)return p}return null}
 function inits(t){const p=t.name.split(' ').filter(x=>x);return (p[0]?.charAt(0)||'')+(p[1]?.charAt(0)||'')}
-function shortName(t){const p=t.name.trim().split(/\s+/);if(p.length<2)return t.name;const short=p[0]+' '+p[p.length-1];const dups=state.teachers.filter(x=>{if(x.id===t.id)return false;const xp=x.name.trim().split(/\s+/);if(xp.length<2)return false;return (xp[0]+' '+xp[xp.length-1])===short});return dups.length>0?t.name:short}
+function shortName(t){
+  const p=t.name.trim().split(/\s+/);
+  if(p.length<2)return t.name;
+  const first=p[0];
+  const last=p[p.length-1];
+  const short=first+' '+last;
+  const dups=state.teachers.filter(x=>{
+    if(x.id===t.id)return false;
+    const xp=x.name.trim().split(/\s+/);
+    if(xp.length<2)return false;
+    return (xp[0]+' '+xp[xp.length-1])===short;
+  });
+  return dups.length>0?t.name:short;
+}
 function esc(s){if(s==null)return '';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 function init(){
@@ -684,7 +693,7 @@ function init(){
     $('lblSch').value=state.school.name||'مدرسة المسعى';
     rdAll();rdMobNav();rdThemes();rdPeriods();
     startLive();applyBrand();
-  }catch(e){console.error(e);$('errBox').innerHTML='<div class="al ale">خطأ: '+e.message+'</div>'}
+  }catch(e){console.error(e)}
 }
 
 function saveQ(){localStorage.setItem('masaa-v2',JSON.stringify(state))}
@@ -707,12 +716,12 @@ function rdStats(){
 
 function rdHomeTiles(){
   const tiles=[
-    {tab:'now',ic:'fa-satellite-dish',n:'الحصة الآن',d:'من يدرّس حالياً',c:'#dc2626'},
+    {tab:'now',ic:'fa-users',n:'المعلمون الآن',d:'حالة كل معلم',c:'#dc2626'},
     {tab:'search',ic:'fa-magnifying-glass',n:'بحث صف',d:'ابحث بالصف',c:'#0284c7'},
     {tab:'teach',ic:'fa-user-graduate',n:'المعلمون',d:'البيانات والجداول',c:'#10b981'},
     {tab:'school',ic:'fa-school',n:'الجدول المدرسي',d:'قابل للتعديل',c:'#8b5cf6'},
     {tab:'rep',ic:'fa-chart-pie',n:'التقارير',d:'تحليل بياني',c:'#db2777'},
-    {tab:'quotas',ic:'fa-scale-balanced',n:'الأنصبة',d:'العداد والإحصاءات',c:'#7c3aed'},
+    {tab:'quotas',ic:'fa-scale-balanced',n:'الإحصائيات',d:'العداد والنسب',c:'#7c3aed'},
     {tab:'dash',ic:'fa-sliders',n:'لوحة التحكم',d:'كل الإعدادات',c:'#0071e3'}
   ];
   $('homeTiles').innerHTML=tiles.map(t=>'<a onclick="go(\''+t.tab+'\')" class="tile" style="--c:'+t.c+'"><div class="ic" style="background:'+t.c+'"><i class="fas '+t.ic+'"></i></div><h3>'+t.n+'</h3><p>'+t.d+'</p></a>').join('');
@@ -725,6 +734,7 @@ function rdTeach(){
   if(!list.length){el.innerHTML='<div class="card" style="padding:40px;text-align:center;color:var(--txt3)">لا يوجد</div>';return}
   el.innerHTML=list.map(t=>{
     const qc=getQ(t);const l=getLimit(t);const lc=getLastCount(t);const slc=getSubLastCount(t);
+    const displayName=shortName(t);
     return '<div class="card" style="padding:14px"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">'+
       '<div class="av" style="background:linear-gradient(135deg,var(--pri),var(--pri2));width:54px;height:54px;font-size:16px">'+inits(t)+'</div>'+
       '<div style="flex:1;min-width:190px">'+
@@ -739,9 +749,9 @@ function rdTeach(){
       '</div></div>'+
       '<div class="cnt'+(t.balance>=l?' ov':'')+'"><p class="cn">'+t.balance+'</p><p class="cl">احتياط</p></div>'+
       '<div style="display:flex;gap:5px">'+
-      '<button class="bs" style="background:var(--suc);color:#fff" onclick="openSch('+t.id+')"><i class="fas fa-calendar-alt"></i></button>'+
-      '<button class="bs" style="background:var(--pri);color:#fff" onclick="editT('+t.id+')"><i class="fas fa-pen"></i></button>'+
-      '<button class="bs" style="background:var(--dan);color:#fff" onclick="delT('+t.id+')"><i class="fas fa-trash"></i></button>'+
+      '<button class="bs no-print" style="background:var(--suc);color:#fff" onclick="openSch('+t.id+')"><i class="fas fa-calendar-alt"></i></button>'+
+      '<button class="bs no-print" style="background:var(--pri);color:#fff" onclick="editT('+t.id+')"><i class="fas fa-pen"></i></button>'+
+      '<button class="bs no-print" style="background:var(--dan);color:#fff" onclick="delT('+t.id+')"><i class="fas fa-trash"></i></button>'+
       '</div></div></div>';
   }).join('');
 }
@@ -777,7 +787,7 @@ function rdReserves(){
         if(s){sn=s.name;ss=s.subject;
           const opts=state.teachers.filter(t=>!t.isAbsent&&t.id!==a.id).map(t=>'<option value="'+t.id+'"'+(t.id===r.substituteId?' selected':'')+'>'+esc(t.name)+' ('+t.balance+'/'+getLimit(t)+')</option>').join('');
           sel='<select onchange="ovr('+a.id+','+r.period+',this.value)" style="font-size:11.5px;padding:6px;max-width:200px">'+opts+'</select>';
-          if(s.phone)wa='<button class="bs" style="background:var(--suc);color:#fff" onclick="sendWA(\''+s.phone+'\',\''+s.name.replace(/'/g,"\\'")+'\','+r.period+',\''+(r.className||'')+'\',\''+a.name.replace(/'/g,"\\'")+'\',\''+a.subject.replace(/'/g,"\\'")+'\')"><i class="fab fa-whatsapp"></i></button>';
+          if(s.phone)wa='<button class="bs no-print" style="background:var(--suc);color:#fff" onclick="sendWA(\''+s.phone+'\',\''+s.name.replace(/'/g,"\\'")+'\','+r.period+',\''+(r.className||'')+'\',\''+a.name.replace(/'/g,"\\'")+'\',\''+a.subject.replace(/'/g,"\\'")+'\')"><i class="fab fa-whatsapp"></i></button>';
         }
       }
       h+='<tr><td style="font-weight:700">'+esc(a.name)+'</td><td><span class="bdg bpu">'+esc(a.subject)+'</span></td>'+
@@ -785,7 +795,7 @@ function rdReserves(){
         '<td><span style="background:rgba(255,159,10,.15);color:var(--warn);padding:5px 11px;border-radius:9px;font-weight:900;font-size:12.5px">'+(r.className||'—')+'</span></td>'+
         '<td style="font-weight:900;color:var(--pri)">'+esc(sn)+'</td>'+
         '<td><span class="bdg bgn">'+esc(ss||'—')+'</span></td>'+
-        '<td style="white-space:nowrap">'+wa+' <button class="bs" style="background:var(--dan);color:#fff" onclick="delRes('+a.id+','+r.period+')"><i class="fas fa-trash"></i></button></td></tr>';
+        '<td style="white-space:nowrap" class="no-print">'+wa+' <button class="bs" style="background:var(--dan);color:#fff" onclick="delRes('+a.id+','+r.period+')"><i class="fas fa-trash"></i></button></td></tr>';
     });
   });
   tb.innerHTML=h;
@@ -836,7 +846,7 @@ function rdSchool(){
         if(sb&&teachers.some(t=>t.id===sb.id)&&!slots.some(x=>x.tid===sb.id))slots.push({n:shortName(sb),c:r.className||'',sub:true,tid:sb.id});
       });
       const pri=slots[0];
-      if(!pri){h+='<td><div class="scl" onclick="editCell(\''+d+'\','+p+',null)">—</div></td>'}
+      if(!pri){h+='<td><div class="scl no-print" onclick="editCell(\''+d+'\','+p+',null)">—</div></td>'}
       else{
         const cls=pri.sub?'sub':(p===8?'last':'has');
         h+='<td><div class="scl '+cls+'" onclick="editCell(\''+d+'\','+p+','+pri.tid+')"><div class="tn">'+esc(pri.n)+'</div><div class="cnm">'+(pri.c||'—')+'</div>'+(slots.length>1?'<div style="font-size:9px;opacity:.7">+'+(slots.length-1)+'</div>':'')+'</div></td>';
@@ -848,7 +858,7 @@ function rdSchool(){
   h+='<div class="lg"><span><span class="dt" style="background:rgba(52,199,89,.15);border:1px solid rgba(52,199,89,.4)"></span>حصة أساسية</span>'+
     '<span><span class="dt" style="background:rgba(255,159,10,.15);border:1px solid rgba(255,159,10,.4)"></span>حصة احتياط</span>'+
     '<span><span class="dt" style="background:rgba(255,149,0,.2);border:1px solid var(--acc)"></span>حصة 8 (⭐)</span>'+
-    '<span style="color:var(--pri)"><i class="fas fa-hand-pointer"></i> اضغط للتعديل</span></div>';
+    '<span style="color:var(--pri)" class="no-print"><i class="fas fa-hand-pointer"></i> اضغط للتعديل</span></div>';
   b.innerHTML=h;
 }
 
@@ -871,7 +881,7 @@ function rdRep(){
   const top=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,7);
   if(charts.teachers)charts.teachers.destroy();
   const c2=$('chTeach');
-  if(c2)charts.teachers=new Chart(c2,{type:'bar',data:{labels:top.map(([id])=>getT(parseInt(id))?.name.split(' ')[0]||'?'),datasets:[{label:'احتياط',data:top.map(([,c])=>c),backgroundColor:'#0071e3',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}}}});
+  if(c2)charts.teachers=new Chart(c2,{type:'bar',data:{labels:top.map(([id])=>(getT(parseInt(id))?.name||'?').split(' ')[0]),datasets:[{label:'احتياط',data:top.map(([,c])=>c),backgroundColor:'#0071e3',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}}}});
 }
 
 function rdQuotas(){
@@ -884,9 +894,9 @@ function rdQuotas(){
       '<td><span class="bdg bpu">'+esc(t.subject)+'</span></td>'+
       '<td><span class="bdg bb">'+qc+'</span></td>'+
       '<td><span class="bdg bt" style="font-size:13px;font-weight:900">'+t.balance+'</span></td>'+
-      '<td><span class="bdg '+(lc>0?'bs2':'bgy')+'">'+lc+' ح8 | احتياط '+slc+'</span></td>'+
+      '<td><span class="bdg '+(lc>0?'bs2':'bgy')+'">'+lc+' | احتياط '+slc+'</span></td>'+
       '<td style="font-weight:900;color:var(--pri)">'+pct+'%</td>'+
-      '<td><input type="number" value="'+(t.customLimit!=null?t.customLimit:l)+'" onchange="setCust('+t.id+',this.value)" style="width:75px;padding:6px;font-weight:900;font-size:12px" min="0"></td></tr>';
+      '<td class="no-print"><input type="number" value="'+(t.customLimit!=null?t.customLimit:l)+'" onchange="setCust('+t.id+',this.value)" style="width:75px;padding:6px;font-weight:900;font-size:12px" min="0"></td></tr>';
   }).join('');
 }
 
@@ -896,8 +906,8 @@ function rdCnt(){
   el.innerHTML=sorted.map(t=>{
     const l=getLimit(t);const slc=getSubLastCount(t);
     const ov=t.balance>=l;
-    const lastCls=slc>0?' last':'';
-    return '<div class="cnt'+(ov?' ov':lastCls)+'"><p class="cn">'+t.balance+'</p><p class="cl">'+esc(t.name.split(' ')[0])+'</p>'+(slc>0?'<p class="cl" style="opacity:.85">⭐ '+slc+'</p>':'')+'</div>';
+    const lastCls=slc>0?'':'';
+    return '<div class="cnt'+(ov?' ov':lastCls)+'"><p class="cn">'+t.balance+'</p><p class="cl">'+esc(shortName(t))+'</p>'+(slc>0?'<p class="cl" style="opacity:.85">⭐ '+slc+'</p>':'')+'</div>';
   }).join('');
 }
 
@@ -926,16 +936,26 @@ function rdNowG(){
   const map={};
   state.teachers.forEach(t=>{const c=(t.schedule[dn]||{})[selP];if(c)map[t.id]={type:'original',c:c}});
   state.reserves.filter(r=>r.date===date&&r.period===selP&&r.substituteId).forEach(r=>{map[r.substituteId]={type:'sub',c:r.className}});
-  g.innerHTML=state.teachers.map(t=>{
+  const q=($('nowSearch')?.value||'').toLowerCase().trim();
+  const filtered=state.teachers.filter(t=>!q||t.name.toLowerCase().includes(q)||t.subject.toLowerCase().includes(q));
+  if(!filtered.length){g.innerHTML='<div class="card" style="padding:40px;text-align:center;color:var(--txt3)">لا توجد نتائج</div>';return}
+  g.innerHTML=filtered.map(t=>{
     const i=map[t.id];const a=t.isAbsent;
     let cls='nc',d='';
-    if(a){cls+=' abs';d='غائب'}
+    if(a){cls+=' abs';d='غائب اليوم'}
     else if(i){cls+=' teach';d=i.type==='original'?'حصة أساسية — '+i.c:'حصة احتياط — '+i.c}
     else{cls+=' free';d='متفرغ'}
+    let dayList='';
+    if(q){
+      const ds=t.schedule[dn]||{};
+      const en=Object.entries(ds).sort((x,y)=>parseInt(x[0])-parseInt(y[0]));
+      if(en.length){dayList='<div class="day-mini"><strong>جدول اليوم:</strong> '+en.map(([p,c])=>'ح'+p+'('+c+')').join(' • ')+'</div>'}
+      else{dayList='<div class="day-mini" style="opacity:.6">لا حصص اليوم</div>'}
+    }
     return '<div class="'+cls+'"><div class="av" style="background:'+(a?'linear-gradient(135deg,var(--dan),#c92a20)':i?'linear-gradient(135deg,var(--pri),var(--pri2))':'linear-gradient(135deg,var(--txt3),var(--txt3))')+'">'+inits(t)+'</div>'+
-      '<div style="flex:1;min-width:0"><p style="font-weight:900;margin:0;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.name)+'</p>'+
+      '<div style="flex:1;min-width:0"><p style="font-weight:900;margin:0;font-size:13.5px">'+esc(t.name)+'</p>'+
       '<p style="margin:2px 0 0;color:var(--txt2);font-size:11px">'+esc(t.subject)+'</p>'+
-      '<p style="margin:4px 0 0;font-size:12px;font-weight:700">'+d+'</p></div></div>';
+      '<p style="margin:4px 0 0;font-size:12px;font-weight:700">'+d+'</p>'+dayList+'</div></div>';
   }).join('');
 }
 
@@ -969,7 +989,7 @@ function rdSearch(){
       '<p style="font-weight:900;margin:0;font-size:14px">'+esc(t.name)+'</p>'+
       '<p style="margin:3px 0 0;color:var(--txt2);font-size:12px">'+esc(t.subject)+'</p>'+
       '<div style="margin-top:5px">'+st+'</div></div>'+
-      (t.phone?'<a href="https://wa.me/'+t.phone.replace(/[^0-9]/g,'')+'" target="_blank" style="background:var(--suc);color:#fff;padding:11px;border-radius:11px;text-decoration:none;display:flex;align-items:center;justify-content:center"><i class="fab fa-whatsapp" style="font-size:18px"></i></a>':'')+
+      (t.phone?'<a href="https://wa.me/'+t.phone.replace(/[^0-9]/g,'')+'" target="_blank" class="no-print" style="background:var(--suc);color:#fff;padding:11px;border-radius:11px;text-decoration:none;display:flex;align-items:center;justify-content:center"><i class="fab fa-whatsapp" style="font-size:18px"></i></a>':'')+
       '</div>';
   })});
   h+='</div>';b.innerHTML=h;
@@ -979,6 +999,11 @@ function togAbs(id){const t=getT(id);if(t){t.isAbsent=!t.isAbsent;save()}}
 function clrAbs(){if(!confirm('مسح الغيابات؟'))return;state.teachers.forEach(t=>t.isAbsent=false);save()}
 
 function go(t){
+  if(t!==tabHistory[tabHistory.length-1]){tabHistory.push(t);if(tabHistory.length>15)tabHistory.shift()}
+  _go(t);
+  const b=$('backFab');if(b){if(tabHistory.length>1)b.classList.add('show');else b.classList.remove('show')}
+}
+function _go(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));
   const el=$('tab-'+t);if(el)el.classList.add('act');
   document.querySelectorAll('.sb nav a').forEach(a=>{a.classList.remove('act');if(a.dataset.tab===t)a.classList.add('act')});
@@ -989,6 +1014,14 @@ function go(t){
   if(t==='dash'){rdThemes();rdPeriods()}
   window.scrollTo(0,0);
 }
+function goBack(){
+  if(tabHistory.length>1){
+    tabHistory.pop();
+    const prev=tabHistory[tabHistory.length-1];
+    _go(prev);
+    const b=$('backFab');if(b){if(tabHistory.length>1)b.classList.add('show');else b.classList.remove('show')}
+  }
+}
 
 function togMob(){const m=$('mobSb');if(m)m.classList.toggle('open')}
 
@@ -996,7 +1029,7 @@ function rdMobNav(){
   const n=$('mobNav');if(!n)return;
   const items=[
     {t:'home',i:'fa-house',l:'الرئيسية'},
-    {t:'now',i:'fa-satellite-dish',l:'الحصة الآن'},
+    {t:'now',i:'fa-users',l:'المعلمون الآن'},
     {t:'search',i:'fa-magnifying-glass',l:'بحث بالصف'},
     {t:'teach',i:'fa-user-graduate',l:'المعلمون'},
     {t:'abs',i:'fa-user-clock',l:'الغياب'},
@@ -1094,9 +1127,8 @@ function autoDist(){
       el.sort((a,b)=>{
         const ra=a.balance/Math.max(1,getLimit(a)),rb=b.balance/Math.max(1,getLimit(b));
         if(Math.abs(ra-rb)>0.01)return ra-rb;
-        const sa=a.subject===abs.subject?0:1,sb=b.subject===abs.subject?0:1;
+        const sa=a.subject===a.subject?0:1,sb=b.subject===a.subject?0:1;
         if(sa!==sb)return sa-sb;
-        // موازنة الحصص الأخيرة
         if(state.settings.balanceLast&&p===8){
           const la=getSubLastCount(a),lb=getSubLastCount(b);
           if(la!==lb)return la-lb;
@@ -1259,6 +1291,13 @@ function fbCp(t){const ta=document.createElement('textarea');ta.value=t;ta.style
 function sendWA(ph,n,p,c,an,as_){const t='السلام عليكم أ. '+n+'\n\nلديك حصة احتياط:\n📚 المادة: '+as_+'\n👤 الغائب: '+an+'\n📅 الحصة: '+p+(p===8?' (الحصة الأخيرة)':'')+'\n🏫 الصف: '+(c||'-')+'\n\nمنصة المسعى';window.open('https://wa.me/'+ph.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(t),'_blank')}
 function shareAbs(){const a=state.teachers.filter(t=>t.isAbsent);if(!a.length){alert('لا يوجد');return}let t='📋 *غياب اليوم*\n📅 '+new Date().toLocaleDateString('ar-OM')+'\n\n';a.forEach((x,i)=>{t+=(i+1)+'. '+x.name+'\n'});window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
 function shareSch(){const d=$('distDate').value;const l=state.reserves.filter(r=>r.date===d);if(!l.length){alert('لا يوجد');return}let t='📋 *جدول الاحتياط*\n📅 '+d+'\n\n';l.forEach(r=>{const a=getT(r.absentId);const s=r.substituteId?getT(r.substituteId):null;t+='▪️ ح'+r.period+(r.period===8?' ⭐':'')+' ('+(r.className||'-')+'): '+(a?a.name:'-')+' ← '+(s?s.name:'لا يوجد')+'\n'});window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
+
+function genPDF(){
+  const prev=document.title;
+  document.title='جدول الاحتياط - '+($('distDate')?.value||'');
+  window.print();
+  setTimeout(()=>{document.title=prev},1500);
+}
 
 function expBak(){const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='masaa-v2-'+new Date().toISOString().split('T')[0]+'.json';a.click()}
 function impBak(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{state=JSON.parse(ev.target.result);save();applyBrand();alert('✅')}catch(err){alert('خطأ: '+err.message)}};r.readAsText(f)}
